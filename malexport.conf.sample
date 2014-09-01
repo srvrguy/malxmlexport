@@ -1,0 +1,15 @@
+[global]
+# This must be a whitelisted user agent. See http://myanimelist.net/forum/?topicid=692311
+user_agent = FIXME
+
+# A directory for storing the files. Must be writable by the script
+save_path = /tmp/mal
+
+# Lists to export, use "yes" to export and "no" to not.
+anime = yes
+manga = yes
+
+[auth]
+# Your MAL credentials go here
+username = my-username-here
+password = my-password-here
