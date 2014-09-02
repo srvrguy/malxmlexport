@@ -61,7 +61,7 @@ def do_export(item_type):
     download_link = download_html.get('href')
     download_name = download_html.contents[0]
 
-    log.info("Downloading list %s from %s" % (download_name, download_link))
+    log.info("Downloading %s from %s%s" % (download_name, MAL_ROOT, download_link))
 
     r = session.get(
         MAL_ROOT + download_link,
