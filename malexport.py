@@ -3,8 +3,9 @@
 # vim:ts=4:sw=4:softtabstop=4:smarttab:expandtab
 #
 from ConfigParser import SafeConfigParser
-import requests
+from optparse import OptionParser
 from BeautifulSoup import BeautifulSoup
+import requests
 import logging
 import os
 import sys
@@ -73,6 +74,19 @@ def main():
     global user_agent
 
     error = False
+
+    parser = OptionParser()
+    parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
+                      help="enable verbose messages")
+    parser.add_option("-d", "--debug", action="store_true", dest="debug",
+                      help="enable debug messages")
+
+    (options, args) = parser.parse_args()
+
+    if options.verbose:
+        log.setLevel(logging.INFO)
+    if options.debug:
+        log.setLevel(logging.DEBUG)
 
     config = SafeConfigParser()
     config.read([os.path.expanduser('~/.malexport.conf')])
