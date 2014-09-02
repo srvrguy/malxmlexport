@@ -26,6 +26,21 @@ log_handler.setFormatter(log_format)
 log.addHandler(log_handler)
 
 
+def do_cleanup(keep, list_type):
+    global save_path
+
+    file_list = sorted([f for f in os.listdir(save_path) if f.startswith(list_type)])
+
+    total_files = len(file_list)
+
+    if total_files > keep:
+
+        for x in range(total_files - keep):
+            file_name = file_list[x]
+            log.info('Removing %s' % file_name)
+            os.remove(save_path + '/' + file_name)
+
+
 def do_export(item_type):
     global user_agent, save_path, log
 
@@ -94,6 +109,7 @@ def main():
     try:
         save_path = config.get('global', 'save_path')
         user_agent = config.get('global', 'user_agent')
+        keep_count = config.getint('global', 'keep')
         wants_anime = config.getboolean('global', 'anime')
         wants_manga = config.getboolean('global', 'manga')
         username = config.get('auth', 'username')
@@ -109,9 +125,11 @@ def main():
 
         if wants_anime:
             do_export(1)
+            do_cleanup(keep_count, 'animelist')
 
         if wants_manga:
             do_export(2)
+            do_cleanup(keep_count, 'mangalist')
 
     except:
         raise

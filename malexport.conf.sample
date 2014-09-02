@@ -5,6 +5,9 @@ user_agent = FIXME
 # A directory for storing the files. Must be writable by the script
 save_path = /tmp/mal
 
+# Number of older copies of each list to retain.
+keep = 5
+
 # Lists to export, use "yes" to export and "no" to not.
 anime = yes
 manga = yes
