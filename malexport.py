@@ -94,7 +94,12 @@ def cookie_login(username, password):
     error_html = text.find('div', attrs={'class': 'badresult'})
 
     if error_html:
-        raise LoginError(error_html.contents[0])
+        error_msg = error_html.contents[0]
+        pos = error_msg.find('.') + 1
+        if pos > 0:
+            raise LoginError(error_msg[:pos])
+        else:
+            raise LoginError(error_msg)
 
 
 def main():
