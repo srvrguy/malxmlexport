@@ -26,6 +26,10 @@ log_handler.setFormatter(log_format)
 log.addHandler(log_handler)
 
 
+class LoginError(Exception):
+    pass
+
+
 def do_cleanup(keep, list_type):
     global save_path
 
@@ -76,19 +80,28 @@ def do_export(item_type):
 def cookie_login(username, password):
     global user_agent
 
+    log.debug("Attempting to login to MAL")
+
     form_login = {'username': username, 'password': password, 'sublogin': 'Login'}
-    session.post(
+    r = session.post(
         MAL_ROOT + "/login.php",
         data=form_login,
         headers={"user-agent": user_agent}
     )
+
+    text = BeautifulSoup(r.content)
+
+    error_html = text.find('div', attrs={'class': 'badresult'})
+
+    if error_html:
+        raise LoginError(error_html.contents[0])
 
 
 def main():
     global save_path, log
     global user_agent
 
-    error = False
+    error = True
 
     parser = OptionParser()
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
@@ -115,7 +128,7 @@ def main():
         username = config.get('auth', 'username')
         password = config.get('auth', 'password')
     except Exception:
-        log.fatal("Could not load configuration data. Please make sure the "
+        log.critical("Could not load configuration data. Please make sure the "
                   "configuration file has been created and all values are "
                   "specified.")
         raise
@@ -131,10 +144,14 @@ def main():
             do_export(2)
             do_cleanup(keep_count, 'mangalist')
 
-    except:
-        raise
+    except LoginError, (e):
+        log.critical("Login Failed. MAL said: '%s'" % e.message)
 
-    return int(error)
+    else:
+        error = False
+
+    finally:
+        return int(error)
 
 
 if __name__ == "__main__":
